@@ -13,6 +13,11 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::get('archive', 'DecompileController@archive');
+Route::get('browse', 'DecompileController@browse');
+Route::post('decompile', 'DecompileController@handle');
+Route::get('fetch', 'DecompileController@fetch');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
