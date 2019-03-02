@@ -44,4 +44,8 @@ return [
         ],
     ],
 
+    'google_analytics' => [
+        'property' => env('GOOGLE_ANALYTICS_PROPERTY'),
+    ],
+
 ];

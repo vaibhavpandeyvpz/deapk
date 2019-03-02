@@ -11,6 +11,15 @@
     <link href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,700" rel="stylesheet">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    @if ($gap = config('services.google_analytics.property'))
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gap }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{{ $gap }}');
+        </script>
+    @endif
 </head>
 <body>
 <header class="sticky-top mb-3">
@@ -60,7 +69,7 @@
                 </a>
             </li>
             <li class="list-inline-item">
-                <a class="text-white" href="https://github.com/vaibhavpadneyvpz/deapk" target="_blank">
+                <a class="text-white" href="https://github.com/vaibhavpandeyvpz/deapk" target="_blank">
                     <i class="fab fa-github fa-2x"></i>
                 </a>
             </li>
