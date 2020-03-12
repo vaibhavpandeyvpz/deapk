@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(Commands\CleanupOldFiles::class)->daily();
+        $schedule->command(Commands\CleanupOldFiles::class)->hourly();
     }
 
     /**

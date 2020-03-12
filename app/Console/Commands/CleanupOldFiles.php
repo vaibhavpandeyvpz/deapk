@@ -39,7 +39,7 @@ class CleanupOldFiles extends Command
      */
     public function handle()
     {
-        $maxage = time() - (3600 * 24 * 1);
+        $maxage = time() - (60 * 60);
         $archives = Storage::disk()->files('archives');
         foreach ($archives as $archive) {
             if (Str::endsWith($archive, '.gitignore')) {
