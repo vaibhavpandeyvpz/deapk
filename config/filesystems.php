@@ -73,6 +73,16 @@ return [
             'endpoint' => env('DO_ENDPOINT'),
         ],
 
+        'oracle' => [
+            'driver' => 's3',
+            'key' => env('OCI_ACCESS_KEY_ID'),
+            'secret' => env('OCI_SECRET_ACCESS_KEY'),
+            'region' => env('OCI_DEFAULT_REGION'),
+            'bucket' => env('OCI_BUCKET'),
+            'url' => env('OCI_URL'),
+            'endpoint' => env('OCI_URL') .  '/'.  env('OCI_BUCKET'),
+        ],
+
     ],
 
 ];

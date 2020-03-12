@@ -56,7 +56,7 @@
                             <a href="https://ibotpeaches.github.io/Apktool/" target="_blank">apktool</a>,
                             <a href="https://github.com/skylot/jadx" target="_blank">jadx</a>
                             and hosted atop
-                            <a href="https://www.digitalocean.com" target="_blank">DigitalOcean</a>&apos;s cloud
+                            <a href="https://www.oracle.com/cloud/" target="_blank">Oracle</a>&apos;s cloud
                             platform.
                         </p>
                     </div>

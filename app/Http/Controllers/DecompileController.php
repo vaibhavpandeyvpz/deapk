@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Alchemy\Zippy\Zippy;
 use App\Http\Requests\BrowseRequest;
 use App\Http\Requests\DecompileRequest;
 use App\Http\Requests\DownloadRequest;

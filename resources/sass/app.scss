@@ -1,6 +1,15 @@
-body {
-  font-family: 'IBM Plex Sans', sans-serif;
-}
+$primary: #3369e7;
+$secondary: #004b79;
+$success: #0abf53;
+$info: #00a4e4;
+$warning: #ffdd00;
+$danger: #ff3d00;
+$light: #eff3f6;
+$dark: #323b43;
+
+$font-family-sans-serif: "IBM Plex Sans", sans-serif;
+
+@import "~bootstrap/scss/bootstrap";
 
 .CodeMirror-cursor {
   border-left-width: 2px !important;

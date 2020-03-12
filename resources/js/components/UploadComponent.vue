@@ -23,9 +23,9 @@
                     <label class="custom-control-label" for="upload-sources">Decompile sources?</label>
                 </div>
             </div>
-            <button class="btn btn-info">
+            <button class="btn btn-success">
                 <i class="fas fa-circle-notch fa-spin mr-1" v-if="submitting"></i>
-                <i class="fas fa-file-upload mr-1" v-else></i>
+                <i class="fab fa-android mr-1" v-else></i>
                 Upload<span v-if="submitting">&hellip;</span>
             </button>
         </fieldset>
@@ -64,14 +64,14 @@
                 if (this.form.sources) {
                     data.append('sources', '1')
                 }
-                const jxhr = $.ajax({
+                $.ajax({
                     contentType: false,
                     data,
                     processData: false,
                     type: 'POST',
                     url: '/api/decompile'
-                });
-                jxhr.always(() => this.submitting = false)
+                })
+                    .always(() => this.submitting = false)
                     .done(data => this.$emit('queued', data))
                     .fail(xhr => {
                         if (xhr.status === 422) {

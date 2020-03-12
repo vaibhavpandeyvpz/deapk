@@ -7,10 +7,9 @@
     <title>{{ config('app.name', 'Laravel') }} &hyphen; Decompile APK Online</title>
     <meta name="description" content="DeAPK is an open-source, online APK decompiler which lets you upload an APK and then decompile it to Smali or Java sources. It is built using Laravel, Vue.js, Bootstrap, FontAwesome, Pusher, Redis, MySQL, apktool, jadx and hosted atop DigitalOcean cloud platform.">
     <meta name="keywords" content="android decompiler, apk decompiler, java decompiler, online apk decompiler, decompile apk online">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,700" rel="stylesheet">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.12.0/css/all.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,700" rel="stylesheet">
     @if ($gap = config('services.google_analytics.property'))
         <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gap }}"></script>
         <script>
@@ -88,8 +87,6 @@
         </p>
     </div>
 </footer>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
 <script src="{{ mix('js/app.js') }}"></script>
 </body>
 </html>
