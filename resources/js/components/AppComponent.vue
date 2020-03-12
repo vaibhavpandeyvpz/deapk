@@ -92,8 +92,10 @@
                 this.status = 0;
                 Echo.channel(data.id)
                     .listen('ArchiveCreated', (e) => {
-                        if (window.open(e.url) === null) {
-                            location.href = e.url
+                        if (e.url) {
+                            if (window.open(e.url) === null) {
+                                location.href = e.url
+                            }
                         }
                         this.$refs.browser.onArchiveDownloaded()
                     })

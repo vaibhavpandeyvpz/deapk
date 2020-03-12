@@ -40,14 +40,19 @@ class CreateArchive implements ShouldQueue
      */
     public function handle()
     {
+        $url = null;
         $source = storage_path("app/decompiled/{$this->id}");
         if (is_dir($source)) {
             $target = storage_path("app/archives/{$this->id}.zip");
-            Zippy::load()->create($target, [$source], true);
-            $path = Storage::disk('spaces')->putFile('archives', new File($target));
-            unlink($target);
-            $url = Storage::disk('spaces')->temporaryUrl($path, Carbon::now()->addHours(24));
-            event(new ArchiveCreated($this->id, $url));
+            try {
+                Zippy::load()->create($target, [$source], true);
+                $path = Storage::disk('cloud')->putFile('archives', new File($target));
+                $url = Storage::disk('cloud')->temporaryUrl($path, Carbon::now()->addHours(24));
+            } catch (\Exception $ignore) {
+            } finally {
+                unlink($target);
+            }
         }
+        event(new ArchiveCreated($this->id, $url));
     }
 }

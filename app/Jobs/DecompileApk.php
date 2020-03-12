@@ -37,22 +37,26 @@ class DecompileApk implements ShouldQueue
     {
         $code = -1;
         if (is_file($this->data['path'])) {
-            $apk = escapeshellarg($this->data['path']);
-            $dir = escapeshellarg(storage_path('app/decompiled/'.$this->data['id']));
-            $java = config('binaries.java');
-            if (stripos($java, ' ') !== false) {
-                $java = '"'.$java.'"';
-            }
-            $apktool = escapeshellarg(config('binaries.apktool'));
-            exec("$java -jar $apktool d -o $dir $apk", $output, $code);
-            if (($code === 0) && $this->data['sources']) {
-                $jadx = config('binaries.jadx');
-                if (stripos($jadx, ' ') !== false) {
-                    $jadx = '"'.$jadx.'"';
+            try {
+                $apk = escapeshellarg($this->data['path']);
+                $dir = escapeshellarg(storage_path('app/decompiled/'.$this->data['id']));
+                $java = config('binaries.java');
+                if (stripos($java, ' ') !== false) {
+                    $java = '"'.$java.'"';
                 }
-                exec("$jadx -r -d $dir $apk");
+                $apktool = escapeshellarg(config('binaries.apktool'));
+                exec("$java -jar $apktool d -o $dir $apk", $output, $code);
+                if (($code === 0) && $this->data['sources']) {
+                    $jadx = config('binaries.jadx');
+                    if (stripos($jadx, ' ') !== false) {
+                        $jadx = '"'.$jadx.'"';
+                    }
+                    exec("$jadx -r -d $dir $apk");
+                }
+            } catch (\Exception $ignore) {
+            } finally {
+                unlink($this->data['path']);
             }
-            unlink($this->data['path']);
         }
         event(new DecompileFinished($this->data['id'], $code === 0));
     }
