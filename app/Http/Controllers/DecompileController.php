@@ -19,7 +19,7 @@ class DecompileController extends Controller
         $data = $request->validated();
         $source = storage_path("app/decompiled/{$data['id']}");
         if (is_dir($source)) {
-            CreateArchive::dispatch($data['id']);
+            CreateArchive::dispatch($data['id'])->onQueue('jobs');
             return response('');
         }
         abort(404);
@@ -90,7 +90,7 @@ class DecompileController extends Controller
         $job['name'] = $apk->getClientOriginalName();
         $job['path'] = storage_path('app/'.$apk->storeAs('uploads', $job['id'].'.apk'));
         $job['sources'] = isset($data['sources']);
-        DecompileApk::dispatch($job);
+        DecompileApk::dispatch($job)->onQueue('jobs');
         return response()->json(Arr::only($job, ['id', 'name']));
     }
 }

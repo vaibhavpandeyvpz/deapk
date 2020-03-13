@@ -80,7 +80,7 @@ return [
             'region' => env('OCI_DEFAULT_REGION'),
             'bucket' => env('OCI_BUCKET'),
             'url' => env('OCI_URL'),
-            'endpoint' => env('OCI_URL') .  '/'.  env('OCI_BUCKET'),
+            'endpoint' => env('OCI_ENDPOINT'),
         ],
 
     ],

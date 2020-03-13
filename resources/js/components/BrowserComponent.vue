@@ -2,23 +2,23 @@
     <div class="card">
         <div class="card-header"><strong>Decompiled:</strong> {{ apk.name }}</div>
         <div class="d-flex m-1">
-            <button class="btn btn-light" @click="onHomeClick"><i class="fas fa-home"></i></button>
-            <button class="btn btn-light ml-1" @click="onBackClick" v-if="mode === 'viewer'">
+            <button class="btn btn-light" @click="home"><i class="fas fa-home"></i></button>
+            <button class="btn btn-light ml-1" @click="back" v-if="mode === 'viewer'">
                 <i class="fas fa-arrow-circle-left"></i>
             </button>
-            <button class="btn btn-dark flex-shrink-0 ml-1" @click="onArchiveClick" :disabled="archiving">
+            <button class="btn btn-dark flex-shrink-0 ml-1" @click="archive" :disabled="archiving">
                 <i class="fas fa-circle-notch fa-spin mr-1" v-if="archiving"></i>
                 <i class="fas fa-file-archive text-warning mr-1" v-else></i>
                 *.zip
             </button>
+            <!--suppress HtmlFormInputWithoutLabel -->
             <input class="form-control flex-grow-1 ml-1" placeholder="current directory" :value="cwd">
         </div>
         <div class="card-body p-0" v-if="mode === 'viewer'">
             <div class="border mx-1 mb-1">
-                <codemirror-component
-                        :options="code.options"
-                        @ready="onCodeMirrorReady"
-                        :value="code.source"></codemirror-component>
+                <codemirror-component :options="code.options"
+                                      @ready="setup"
+                                      :value="code.source"></codemirror-component>
             </div>
         </div>
         <div class="table-responsive" v-else>
@@ -34,14 +34,14 @@
                 <template v-if="files.length > 0">
                     <tr>
                         <td class="text-center"><i class="fas fa-folder fa-fw text-warning"></i></td>
-                        <td colspan="2"><a @click.prevent="onUpClick" href="">&hellip;</a></td>
+                        <td colspan="2"><a @click.prevent="up" href="">&hellip;</a></td>
                     </tr>
                     <tr v-for="file in files">
                         <td class="text-center">
                             <i class="fas fa-folder fa-fw text-warning" v-if="file.type === 'dir'"></i>
                             <i class="fas fa-file fa-fw" v-else></i>
                         </td>
-                        <td><a @click.prevent="() => onEntryClick(file)" href="">{{ file.name }}</a></td>
+                        <td><a @click.prevent="() => browse(file)" href="">{{ file.name }}</a></td>
                         <td>{{ file.size }}</td>
                     </tr>
                 </template>
@@ -67,21 +67,21 @@
 </style>
 
 <script>
-    import filesize from 'filesize'
-    import { codemirror as CodemirrorComponent } from 'vue-codemirror'
-    import 'codemirror/addon/selection/active-line.js'
-    import 'codemirror/mode/clike/clike.js'
-    import 'codemirror/mode/properties/properties.js'
-    import 'codemirror/mode/xml/xml.js'
-    import 'codemirror/mode/yaml/yaml.js'
-    import 'codemirror/lib/codemirror.css'
+    import filesize from 'filesize';
+    import { codemirror as CodemirrorComponent } from 'vue-codemirror';
+    import 'codemirror/addon/selection/active-line.js';
+    import 'codemirror/mode/clike/clike.js';
+    import 'codemirror/mode/properties/properties.js';
+    import 'codemirror/mode/xml/xml.js';
+    import 'codemirror/mode/yaml/yaml.js';
+    import 'codemirror/lib/codemirror.css';
 
     const modes = {
         'java': 'text/x-java',
         'properties': 'text/x-properties',
         'txt': 'text/plain',
         'xml': 'application/xml',
-        'yml': 'text/x-yaml'
+        'yml': 'text/x-yaml',
     };
 
     export default {
@@ -107,39 +107,30 @@
                         lineNumbers: true,
                         mode: modes.txt,
                         readOnly: true,
-                        styleActiveLine: true
+                        styleActiveLine: true,
                     },
-                    source: ''
+                    source: '',
                 },
                 loading: false,
                 mode: 'browser',
-                files: []
+                files: [],
             }
         },
         methods: {
-            onArchiveClick() {
+            archive() {
                 $.get('/api/archive?id=' + this.apk.id, () => this.archiving = true)
             },
-            onArchiveDownloaded() {
+            archived() {
                 this.archiving = false
             },
-            onBackClick() {
+            back() {
                 this.$delete(this.breadcrumbs, this.breadcrumbs.length - 1);
                 this.mode = 'browser'
             },
-            onBreadcrumbClick(i) {
-                const breadcrumbs = this.breadcrumbs.concat();
-                breadcrumbs.splice(i + 1);
-                this.breadcrumbs = breadcrumbs;
-                this.onReload()
-            },
-            onCodeMirrorReady(cm) {
-                cm.setSize(null, 640)
-            },
-            onEntryClick(file) {
+            browse(file) {
                 this.breadcrumbs.push(file.name);
                 if (file.type === 'dir') {
-                    this.onReload()
+                    this.reload()
                 } else {
                     const path = this.breadcrumbs.join('/');
                     const extn = file.name.split('.').pop();
@@ -165,29 +156,37 @@
                     }
                 }
             },
-            onHomeClick() {
-                this.breadcrumbs = [];
-                this.onReload()
+            goto(i) {
+                const breadcrumbs = this.breadcrumbs.concat();
+                breadcrumbs.splice(i + 1);
+                this.breadcrumbs = breadcrumbs;
+                this.reload()
             },
-            onReload() {
+            home() {
+                this.breadcrumbs = [];
+                this.reload()
+            },
+            reload() {
                 this.loading = true;
                 const path = this.breadcrumbs.length > 0 ? this.breadcrumbs.join('/') : '/';
-                const jxhr = $.get('/api/browse', { id: this.apk.id, path }, files => {
+                $.get('/api/browse', { id: this.apk.id, path }, files => {
                     this.files = files.map(file => {
                         file.size = filesize(file.size);
                         return file
                     })
-                });
-                jxhr.always(() => this.loading = false)
+                }).always(() => this.loading = false)
             },
-            onUpClick() {
+            setup(cm) {
+                cm.setSize(null, 640)
+            },
+            up() {
                 this.$delete(this.breadcrumbs, this.breadcrumbs.length - 1);
-                this.onReload()
-            }
+                this.reload()
+            },
         },
         mounted() {
-            this.onReload()
+            this.reload()
         },
-        props: ['apk']
+        props: ['apk'],
     }
 </script>

@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class CreateArchive implements ShouldQueue
@@ -48,7 +49,8 @@ class CreateArchive implements ShouldQueue
                 Zippy::load()->create($target, [$source], true);
                 $path = Storage::disk('cloud')->putFile('archives', new File($target));
                 $url = Storage::disk('cloud')->temporaryUrl($path, Carbon::now()->addHours(24));
-            } catch (\Exception $ignore) {
+            } catch (\Exception $e) {
+                Log::error($e);
             } finally {
                 unlink($target);
             }

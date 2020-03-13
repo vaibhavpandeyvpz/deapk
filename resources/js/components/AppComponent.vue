@@ -2,20 +2,48 @@
     <main class="container">
         <div class="row">
             <div class="col-md-4 col-lg-3">
-                <upload-component @queued="onApkQueued"></upload-component>
+                <upload-component @queued="queued"></upload-component>
             </div>
-            <div class="col-md-8 col-lg-9">
-                <browser-component :apk="apk" class="mb-3" ref="browser" v-if="status === 1"></browser-component>
-                <div class="card border-dashed mb-3" v-else-if="status === -1">
+            <div class="col-md-8 col-lg-9" v-if="checking">
+                <div class="card border-dashed mb-3">
+                    <div class="card-body text-center px-3 py-5">
+                        <i class="fas fa-circle-notch fa-4x fa-spin text-info mb-3"></i>
+                        <h5 class="card-title">Checking&hellip;</h5>
+                        <p class="card-text">Finding if previous decompilation session is available.</p>
+                        <p class="card-text">
+                            <small>
+                                <strong>Name:</strong> {{ apk.name }}<br>
+                                <strong>ID:</strong> {{ apk.id }}
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 col-lg-9" v-else>
+                <browser-component :apk="apk" class="mb-3" ref="browser" v-if="status === 'successful'"></browser-component>
+                <div class="card border-dashed mb-3" v-else-if="status === 'failed'">
                     <div class="card-body text-center px-3 py-5">
                         <i class="fas fa-minus-circle fa-4x text-danger mb-3"></i>
                         <h5 class="card-title">Failed</h5>
                         <p class="card-text">Could not decompile {{ apk.name }}.</p>
                     </div>
                 </div>
-                <div class="card border-dashed mb-3" v-else-if="status === 0">
+                <div class="card border-dashed mb-3" v-else-if="status === 'queued'">
                     <div class="card-body text-center px-3 py-5">
                         <i class="fas fa-circle-notch fa-4x fa-spin text-warning mb-3"></i>
+                        <h5 class="card-title">Waiting&hellip;</h5>
+                        <p class="card-text">Your decompilation request is in queue.</p>
+                        <p class="card-text">
+                            <small>
+                                <strong>Name:</strong> {{ apk.name }}<br>
+                                <strong>ID:</strong> {{ apk.id }}
+                            </small>
+                        </p>
+                    </div>
+                </div>
+                <div class="card border-dashed mb-3" v-else-if="status === 'started'">
+                    <div class="card-body text-center px-3 py-5">
+                        <i class="fas fa-circle-notch fa-4x fa-spin text-info mb-3"></i>
                         <h5 class="card-title">Decompiling&hellip;</h5>
                         <p class="card-text">Please wait while your file is processing.</p>
                         <p class="card-text">
@@ -73,6 +101,8 @@
 </style>
 
 <script>
+    import store2 from 'store2';
+
     export default {
         data() {
             return {
@@ -80,27 +110,40 @@
                     id: null,
                     name: null
                 },
-                status: null
+                checking: false,
+                status: null,
             }
         },
         methods: {
-            onApkQueued(data) {
+            queued(data) {
                 if (this.apk.id) {
                     Echo.leaveChannel(this.apk.id)
                 }
+                store2.set('apk', data);
                 this.apk = data;
-                this.status = 0;
+                this.status = 'queued';
                 Echo.channel(data.id)
+                    .listen('DecompileStarted', () => this.status = 'started')
+                    .listen('DecompileFinished', (e) => this.status = e.status ? 'successful' : 'failed')
                     .listen('ArchiveCreated', (e) => {
-                        if (e.url) {
-                            if (window.open(e.url) === null) {
-                                location.href = e.url
-                            }
+                        if (e.url && (window.open(e.url) === null)) {
+                            location.href = e.url
                         }
-                        this.$refs.browser.onArchiveDownloaded()
+                        this.$refs.browser.archived()
                     })
-                    .listen('DecompileFinished', (e) => this.status = e.status ? 1 : -1)
+            },
+        },
+        mounted() {
+            if (store2.has('apk')) {
+                const data = store2.get('apk');
+                this.checking = true;
+                $.get('/api/browse', { id: data.id, path: '/' })
+                    .always(() => this.checking = false)
+                    .then(() => {
+                        this.apk = data;
+                        this.status = 'successful'
+                    })
             }
-        }
+        },
     }
 </script>

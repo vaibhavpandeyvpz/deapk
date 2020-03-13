@@ -8,18 +8,15 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class ArchiveCreated implements ShouldBroadcast
+class DecompileStarted implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $id;
 
-    public $url;
-
-    public function __construct($id, $url)
+    public function __construct($id)
     {
         $this->id = $id;
-        $this->url = $url;
     }
 
     public function broadcastOn()

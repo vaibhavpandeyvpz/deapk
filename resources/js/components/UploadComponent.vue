@@ -1,5 +1,5 @@
 <template>
-    <form class="mb-3" enctype="multipart/form-data" method="post" @submit.prevent="onFormSubmit">
+    <form class="mb-3" enctype="multipart/form-data" method="post" @submit.prevent="submit">
         <div class="alert alert-warning text-justify" role="alert">
             <i class="fas fa-exclamation-triangle"></i>
             Due to server limitations, only *.apk files sizing upto 50 MBs are allowed.
@@ -12,7 +12,7 @@
                            ref="apk"
                            required
                            type="file"
-                           @change="onFileSelect">
+                           @change="chosen">
                     <label class="custom-file-label" for="upload-apk">{{ label }}</label>
                     <div class="invalid-feedback" v-if="!!errors.apk">{{ errors.apk[0] }}</div>
                 </div>
@@ -25,7 +25,7 @@
             </div>
             <button class="btn btn-success">
                 <i class="fas fa-circle-notch fa-spin mr-1" v-if="submitting"></i>
-                <i class="fab fa-android mr-1" v-else></i>
+                <i class="fas fa-upload mr-1" v-else></i>
                 Upload<span v-if="submitting">&hellip;</span>
             </button>
         </fieldset>
@@ -45,18 +45,18 @@
                 errors: {},
                 form: {
                     apk: null,
-                    sources: true
+                    sources: false,
                 },
                 label: 'Choose an *.apk',
-                submitting: false
+                submitting: false,
             }
         },
         methods: {
-            onFileSelect() {
+            chosen() {
                 this.form.apk = this.$refs.apk.files[0];
                 this.label = !!this.form.apk ? this.form.apk.name : 'Choose an *.apk'
             },
-            onFormSubmit() {
+            submit() {
                 this.errors = {};
                 this.submitting = true;
                 const data = new FormData();

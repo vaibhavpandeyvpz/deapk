@@ -3,11 +3,13 @@
 namespace App\Jobs;
 
 use App\Events\DecompileFinished;
+use App\Events\DecompileStarted;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 
 class DecompileApk implements ShouldQueue
 {
@@ -35,6 +37,7 @@ class DecompileApk implements ShouldQueue
      */
     public function handle()
     {
+        event(new DecompileStarted($this->data['id']));
         $code = -1;
         if (is_file($this->data['path'])) {
             try {
@@ -53,7 +56,8 @@ class DecompileApk implements ShouldQueue
                     }
                     exec("$jadx -r -d $dir $apk");
                 }
-            } catch (\Exception $ignore) {
+            } catch (\Exception $e) {
+                Log::error($e);
             } finally {
                 unlink($this->data['path']);
             }
