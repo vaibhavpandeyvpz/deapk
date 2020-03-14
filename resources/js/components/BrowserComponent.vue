@@ -25,8 +25,8 @@
             <table :class="`table${files.length > 0 ? ' table-hover' : ''}`">
                 <thead class="bg-light">
                 <tr>
-                    <th class="w-1pt text-center"><i class="fa fa-sync fa-spin" v-if="loading"></i></th>
-                    <th>Name</th>
+                    <th class="text-center"><i class="fa fa-circle-notch fa-spin" v-if="loading"></i></th>
+                    <th class="w-100">Name</th>
                     <th>Size</th>
                 </tr>
                 </thead>
@@ -54,15 +54,12 @@
     </div>
 </template>
 
-<style scoped>
-    .breadcrumb {
-        border-radius: 0;
-    }
+<style lang="scss" scoped>
     .table {
         margin-bottom: 0 !important;
-    }
-    .w-1pt {
-        width: 1pt;
+        th, td {
+            white-space: nowrap;
+        }
     }
 </style>
 

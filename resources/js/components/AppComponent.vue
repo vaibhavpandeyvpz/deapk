@@ -7,7 +7,7 @@
             <div class="col-md-8 col-lg-9" v-if="checking">
                 <div class="card border-dashed mb-3">
                     <div class="card-body text-center px-3 py-5">
-                        <i class="fas fa-circle-notch fa-4x fa-spin text-info mb-3"></i>
+                        <i class="fas fa-circle-notch fa-4x fa-spin text-muted mb-3"></i>
                         <h5 class="card-title">Checking&hellip;</h5>
                         <p class="card-text">Finding if previous decompilation session is available.</p>
                         <p class="card-text">
@@ -108,7 +108,7 @@
             return {
                 apk: {
                     id: null,
-                    name: null
+                    name: null,
                 },
                 checking: false,
                 status: null,
