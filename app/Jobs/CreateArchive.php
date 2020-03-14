@@ -47,8 +47,8 @@ class CreateArchive implements ShouldQueue
             $target = storage_path("app/archives/{$this->id}.zip");
             try {
                 Zippy::load()->create($target, [$source], true);
-                $path = Storage::disk('cloud')->putFile('archives', new File($target));
-                $url = Storage::disk('cloud')->temporaryUrl($path, Carbon::now()->addHours(24));
+                $path = Storage::cloud()->putFile('archives', new File($target));
+                $url = Storage::cloud()->temporaryUrl($path, Carbon::now()->addHours(24));
             } catch (\Exception $e) {
                 Log::error($e);
             } finally {
